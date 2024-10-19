@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-from app.routers import user, expense , balance_sheet  # Import your routers
-
+from app.routers import user, expense , balance_sheet  
 app = FastAPI()
 
-# Include your routers
 app.include_router(user.router)
 app.include_router(expense.router)
 app.include_router(balance_sheet.router)
