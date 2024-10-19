@@ -2,13 +2,12 @@ from pydantic import BaseModel
 from typing import List, Optional
 from enum import Enum
 from decimal import Decimal
-# pip install fastapi[all] python-jose[cryptography] passlib[bcrypt] sqlalchemy
 
 class UserCreate(BaseModel):
     email: str
     name: str
     mobile_number: str
-    password: str  # Add password field
+    password: str 
 
 class User(BaseModel):
     id: int
@@ -26,15 +25,15 @@ class ExpenseMethod(str, Enum):
 
 class ExpenseDetailCreate(BaseModel):
     user_id: int
-    amount_owed: Optional[Decimal] = None  # Use Decimal for precision
+    amount_owed: Optional[Decimal] = None  
     percentage: Optional[float] = None    
 
 class ExpenseCreate(BaseModel):
     user_id: int
-    amount: Decimal  # Use Decimal for monetary values
+    amount: Decimal 
     method: ExpenseMethod
     description: str
-    details: List[ExpenseDetailCreate]  # List of details for each participant
+    details: List[ExpenseDetailCreate]  
 
 class Expense(BaseModel):
     id: int
@@ -44,7 +43,7 @@ class Expense(BaseModel):
     description: str  
 
     class Config:
-        orm_mode = True  # This allows compatibility with SQLAlchemy models
+        orm_mode = True 
 
 class ExpenseOut(BaseModel):
     id: int
