@@ -17,8 +17,7 @@ async def create_user(db: Session, user: schemas.UserCreate):
             detail="Email already registered."
         )
     
-    # Proceed to create a new user
-    hashed_password = hash_password(user.password)  # Hash the password using your hashing function
+    hashed_password = hash_password(user.password) 
     db_user = models.User(
         email=user.email,
         name=user.name,
@@ -29,12 +28,11 @@ async def create_user(db: Session, user: schemas.UserCreate):
     db.add(db_user)
     
     try:
-        db.commit()  # Commit the new user to the database
-        db.refresh(db_user)  # Refresh the instance to get the generated state
-        return db_user  # Return the newly created user
+        db.commit() 
+        db.refresh(db_user)  
+        return db_user  
     except IntegrityError as e:
-        db.rollback()  # Rollback the session on error
-        # Check if the error is related to unique constraints
+        db.rollback()  
         if 'UNIQUE constraint failed' in str(e):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -54,11 +52,9 @@ def get_user_by_email(db: Session, email: str):
 
 
 def add_expense(db: Session, expense: ExpenseCreate):
-    # Validate the expense method using the enum
     if expense.method not in ExpenseMethod:
         raise ValueError("Invalid expense splitting method")
 
-    # Create the expense entry
     db_expense = Expense(
         user_id=expense.user_id,
         amount=expense.amount,
@@ -69,10 +65,9 @@ def add_expense(db: Session, expense: ExpenseCreate):
     db.add(db_expense)
 
     try:
-        db.commit()  # Commit the expense first
+        db.commit() 
         db.refresh(db_expense)  # Refresh to get the generated ID
 
-        # Handling different methods of expense splitting
         if expense.method == ExpenseMethod.equal:
             # Split equally among all participants
             num_participants = len(expense.details)
@@ -123,12 +118,12 @@ def add_expense(db: Session, expense: ExpenseCreate):
                 )
                 db.add(db_detail)
 
-        db.commit()  # Commit all details after processing
+        db.commit()  
     except ValueError as e:
-        db.rollback()  # Rollback on error
-        raise e  # Reraise the exception for handling upstream
+        db.rollback()  
+        raise e 
     except Exception as e:
-        db.rollback()  # Rollback on any unexpected error
+        db.rollback() 
         raise ValueError("An unexpected error occurred while adding expense details.") from e
 
     return db_expense
